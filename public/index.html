@@ -1,0 +1,18 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Flask Simple Maps</title>
+
+		<link rel="stylesheet" type="text/css" href="index.css">
+
+		<script src="OpenLayers.js"></script>
+	</head>
+	<body>
+		<div id="demoMap"></div>
+	</body>
+</html>
+<script>
+	map = new OpenLayers.Map("demoMap");
+	map.addLayer(new OpenLayers.Layer.OSM());
+	map.zoomToMaxExtent();
+</script>

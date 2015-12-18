@@ -30,11 +30,22 @@ class User(db.Model):
 	def __repr__(self):
 		return str(public_serialize(self))
 
-#class POI(db.Model):
-#	__tablename__ = "poi"
+class Poi(db.Model):
+	__tablename__ = "poi"
 
-#	id = db.Column(db.Integer, primary_key=True)
-#	location = db.Column(Geometry("POINT"), unique=True)
-#	created_on = db.Column(db.TIMESTAMP, server_default = db.func.current_timestamp())
+	id = db.Column(db.Integer, primary_key=True, unique=True)
+	label = db.Column(db.String(255))
+	description = db.Column(db.String(255))
+	location = db.Column(Geometry("POINT"), unique=True)
+	created_on = db.Column(db.TIMESTAMP, server_default = db.func.current_timestamp())
+
+	def __init__(self, label, description, location):
+		self.label = label
+		self.description = description
+		self.location = location
+
+	#For printing purposes
+	def __repr__(self):
+		return str(public_serialize(self))
 
 db.create_all()

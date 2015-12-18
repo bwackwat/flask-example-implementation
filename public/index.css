@@ -3,11 +3,11 @@ body {
 }
 
 input {
-	margin: 10px;
+	margin: 5px;
 }
 
 button {
-	margin: 10px;
+	margin: 5px;
 }
 
 #demoMap {
@@ -27,11 +27,11 @@ button {
 
 .modal {
 	background-color: lightblue;
-	width: 50vh;
-	height: 50vh;
 	position: fixed;
-	top: 25vh;
-	left: 0;
+	top: 35vh;
+	left: 35vw;
+	margin: 0px;
+	padding: 10px;
 	z-index: 1000;
 	border: 1px black solid;
 }

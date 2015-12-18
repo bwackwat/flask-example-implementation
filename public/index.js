@@ -82,15 +82,30 @@ document.getElementById("logout").onclick = function() {
 //START MAP SCRIPT
 
 map = new OpenLayers.Map("demoMap");
+
 map.addLayer(new OpenLayers.Layer.OSM());
+
+var markers = new OpenLayers.Layer.Markers("Markers");
+var size = new OpenLayers.Size(21, 25);
+var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
+var icon = new OpenLayers.Icon("http://maps.google.com/intl/en_us/mapfiles/ms/micons/orange-dot.png", size, offset);
+map.addLayer(markers);
+
+var currentmarker = null;
 
 map.events.register("click", map, function(e) {
 	if(localStorage.getItem(localStorageLoginTokenKey) === null){
 		login.show();	
 	}else{
 		var position = map.getLonLatFromPixel(e.xy);
-		position.transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:4326"));
 		poiLocation.innerHTML = position.lon.toFixed(5) + ", " + position.lat.toFixed(5);
+
+		if(currentmarker !== 'undefined'){
+			markers.removeMarker(currentmarker);
+		}
+		currentmarker = new OpenLayers.Marker(position, icon.clone());
+		markers.addMarker(currentmarker);
+
 		poi.show();	
 	}
 });

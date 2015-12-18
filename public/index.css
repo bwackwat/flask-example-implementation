@@ -2,6 +2,36 @@ body {
 	margin: 0px;
 }
 
+input {
+	margin: 10px;
+}
+
+button {
+	margin: 10px;
+}
+
 #demoMap {
-	height:100vh;
+	border: 1px black solid;
+	height: 96vh;
+}
+
+#banner {
+	background-color: lightblue;
+	border: 1px black solid;
+	height: 3vh;
+}
+
+.result {
+	color: red;
+}
+
+.modal {
+	background-color: lightblue;
+	width: 50vh;
+	height: 50vh;
+	position: fixed;
+	top: 25vh;
+	left: 0;
+	z-index: 1000;
+	border: 1px black solid;
 }

@@ -19,13 +19,20 @@ MYSECRET = "thisismyrealsecret"
 
 from models import User, public_serialize
 
+@app.after_request
+def after_request(response):
+	response.headers.add('Access-Control-Allow-Origin', '*')
+	response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+	response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+	return response
+
 def exceptor(f):
 	@wraps(f)
 	def decorated(*args, **kwargs):
 		try:
 			return f(*args, **kwargs)
-		except DecodeError as e:
-			return jsonify(error=str(e) + ": Invalid token! Go login again...")
+		#except DecodeError as e:
+		#	return jsonify(error=str(e) + ": Invalid token! Go login again...")
 		except ValueError as e:
 			return jsonify(error=str(e) + ": Password was stored improperly...")
 		except KeyError as e:
@@ -40,6 +47,7 @@ def protected(f):
 	@wraps(f)
 	def decorated(*args, **kwargs):
 		data = request.json
+		print(data);
 		token = data['token']
 		tokendata = jwt.decode(token, MYSECRET, algorithms=["HS256"])
 
@@ -68,6 +76,8 @@ def users():
 def signup():
 	data = request.json
 
+	print(data);
+
 	username = data['username']
 	email = data['email']
 	password = data['password']
@@ -83,6 +93,8 @@ def signup():
 def login():
 	data = request.json
 
+	print(data);
+
 	username = data['username']
 	password = data['password']
 
@@ -91,7 +103,7 @@ def login():
 		return jsonify(error="Invalid username!")
 	if bcrypt.check_password_hash(user.password, password):
 		token = jwt.encode({"time": str(db.func.current_timestamp()), "username": user.username, "password": user.password}, MYSECRET, algorithm="HS256")
-		return jsonify(result="Successful login! Your authentication token is: " + token)
+		return jsonify(result="Successful login!", token=token)
 	else:
 		return jsonify(error="Invalid password!")
 

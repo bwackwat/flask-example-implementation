@@ -1,18 +1,51 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<title>Flask Simple Maps</title>
+		<title>Flask API - POI Map</title>
 
 		<link rel="stylesheet" type="text/css" href="index.css">
 
 		<script src="OpenLayers.js"></script>
+
+		<script src="index.js"></script>
 	</head>
+
 	<body>
+		<div id="banner">
+			<h4 style="margin: 4px;">Flask API Implementation Sample - A secure, user-based point of interest mapper. <div id="status" style="float: right">Welcome!</div></h4>
+		</div>
+
 		<div id="demoMap"></div>
+
+		<dialog id="signupModal" class="modal">
+			<h3>Signup</h3>
+			<input id="signupUsername" type="text" placeholder="username"><br>
+			<input id="signupEmail" type="text" placeholder="email"><br>
+			<input id="signupPassword" type="password" placeholder="password"><br>
+			<button id="signupButton">Signup</button>
+			<button id="cancelSignupButton">Maybe Later</button>
+		</dialog>
+
+		<dialog id="loginModal" class="modal">
+			<h3>Login to save your points of interest!</h3>
+			<h4 class="result" id="loginResult"></h4>
+			<input id="username" type="text" placeholder="username"><br>
+			<input id="password" type="password" placeholder="password"><br>
+			<button id="loginButton">Login</button>
+			<button id="cancelLoginButton">Maybe Later</button><br>
+			<h4>Or maybe you need to...</h4>
+			<button id="goToSignup">Signup</button>
+		</dialog>
+
+		<dialog id="poiModal" class="modal">
+			<h3>Enter some information about this point of interest!</h3>
+			<h4 id="poiLocation"></h4>
+			<input type="text" placeholder="location label" id="poilabel"><br>
+			<input type="text" placeholder="location description" id="poidescription"><br>
+			<button id="savePoi">Save</button>
+			<button id="cancelPoi">Cancel</button><br>
+			<h4>Or maybe you just want to...</h4>
+			<button id="logout">Logout</button>
+		</dialog>
 	</body>
 </html>
-<script>
-	map = new OpenLayers.Map("demoMap");
-	map.addLayer(new OpenLayers.Layer.OSM());
-	map.zoomToMaxExtent();
-</script>

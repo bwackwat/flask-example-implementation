@@ -2,7 +2,7 @@ import sys
 import jwt
 
 from functools import wraps
-from flask import Flask, jsonify, request, json
+from flask import Flask, jsonify, request, json, Blueprint
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.bcrypt import Bcrypt
 from sqlalchemy.exc import IntegrityError
@@ -10,7 +10,8 @@ from sqlalchemy.exc import IntegrityError
 app = Flask(__name__);
 app.config.update(
 	PROPAGATE_EXCEPTIONS = True,
-	SQLALCHEMY_DATABASE_URI = "postgresql+psycopg2://postgres:aq12ws@localhost:5432/postgres"
+	SQLALCHEMY_DATABASE_URI = "postgresql+psycopg2://postgres:aq12ws@localhost:5432/postgres",
+	SQLALCHEMY_TRACK_MODIFICATIONS = True
 )
 bcrypt = Bcrypt(app)
 db = SQLAlchemy(app)
@@ -31,27 +32,25 @@ def exceptor(f):
 	def decorated(*args, **kwargs):
 		try:
 			return f(*args, **kwargs)
-		#except DecodeError as e:
-		#	return jsonify(error=str(e) + ": Invalid token! Go login again...")
+		except DecodeError as e:
+			return jsonify(error=str(e) + ": Invalid token! Go login again...")
 		except ValueError as e:
 			return jsonify(error=str(e) + ": Password was stored improperly...")
 		except KeyError as e:
 			return jsonify(error=str(e) + " must be provided.")
 		except IntegrityError as e:
 			return jsonify(error=e.message)
-		except Exception as e:
-			return jsonify(error=repr(e) + "(Invalid JSON?)")
+		#except Exception as e:
+		#	return jsonify(error=repr(e) + "(Invalid JSON?)")
 	return decorated
 
 def protected(f):
 	@wraps(f)
 	def decorated(*args, **kwargs):
 		data = request.json
-		print(data);
 		token = data['token']
 		tokendata = jwt.decode(token, MYSECRET, algorithms=["HS256"])
 
-		print tokendata
 		user = User.query.filter_by(username=tokendata['username']).first()
 		if user == None:
 			return jsonify(error="Invalid username! Are you tring to forge a token?")
@@ -61,7 +60,9 @@ def protected(f):
 			return jsonify(error="Invalid password! Are you tring to forge a token?")
 	return decorated
 
-@app.route("/users", methods=["POST"])
+apiPrefix = "/api";
+
+@app.route(apiPrefix + "/users", methods=["POST"])
 @exceptor
 @protected
 def users():
@@ -71,12 +72,10 @@ def users():
 		results.append(public_serialize(user))
 	return jsonify(result=results)
 
-@app.route("/signup", methods=["POST"])
+@app.route(apiPrefix + "/signup", methods=["POST"])
 @exceptor
 def signup():
 	data = request.json
-
-	print(data);
 
 	username = data['username']
 	email = data['email']
@@ -88,12 +87,10 @@ def signup():
 
 	return jsonify(result=repr(user))
 
-@app.route("/login", methods=["POST"])
+@app.route(apiPrefix + "/login", methods=["POST"])
 @exceptor
 def login():
 	data = request.json
-
-	print(data);
 
 	username = data['username']
 	password = data['password']

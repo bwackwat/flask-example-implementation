@@ -18,7 +18,6 @@ class User(db.Model):
 	username = db.Column(db.String(255), index=True, unique=True)
 	email = db.Column(db.String(255), index=True, unique=True)
 	password = db.Column(db.String(255))
-	token = db.Column(db.String(255))
 	created_on = db.Column(db.TIMESTAMP, server_default = db.func.current_timestamp())
 
 	def __init__(self, username, email, password):
@@ -48,4 +47,6 @@ class Poi(db.Model):
 	def __repr__(self):
 		return str(public_serialize(self))
 
+#Run once; upon postgresql installation.
+#db.engine.execute("create extension postgis")
 db.create_all()

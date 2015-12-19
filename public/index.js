@@ -2,37 +2,26 @@ window.onload = function(){
 
 var localStorageLoginUsernameKey = "FLASK_MAP_EXAMPLE_USERNAME";
 var localStorageLoginTokenKey = "FLASK_MAP_EXAMPLE_TOKEN";
-var apiUrl = "http://" + window.location.hostname + ":5000/login";
+var apiUrl = "https://" + window.location.hostname + ":1000/api";
 
 var status = document.getElementById("status");
 
-//LOGIN MODAL SCRIPT
+//API POSTING FUNCTION
 
-var login = document.getElementById("loginModal");
-var loginResult = document.getElementById("loginResult");
-var username = document.getElementById("username");
-var password = document.getElementById("password");
-
-document.getElementById("loginButton").onclick = function() {
-	var loginData = JSON.stringify({"username": username.value, "password": password.value});
-	alert(loginData);
+function callAPI(route, data, callback){
+	var sendData = JSON.stringify(data);
 
 	var http = new XMLHttpRequest();
-	http.open("POST", apiUrl, true);
+	http.open("POST", apiUrl + route, true);
 	http.setRequestHeader("Content-type", "application/json");
 	http.onreadystatechange = function(){
+		if(http.responseText == ""){
+			//Bloody OPTIONS pre-flight...
+			return;
+		}
 		var resjson = JSON.parse(http.responseText);
-		alert(http.responseText);
-
 		if(http.readyState == 4 && http.status == 200){
-			if(typeof(resjson.error) === 'undefined'){
-				localStorage.setItem(localStorageLoginUsernameKey, username.value);
-				localStorage.setItem(localStorageLoginTokenKey, resjson.token);
-				status.innerHTML = "Welcome! You are logged in as " + localStorage.getItem(localStorageLoginUsernameKey);
-				login.close();	
-			}else{
-				loginResult.innerHTML = resjson.error;
-			}
+			callback(resjson);
 		}else if(http.readyState == 3){
 			//Bogus OPTIONS response...
 			
@@ -46,7 +35,27 @@ document.getElementById("loginButton").onclick = function() {
 			alert("HTTP ERROR!");
 		}
 	}
-	http.send(loginData);
+	http.send(sendData);
+}
+
+//LOGIN MODAL SCRIPT
+
+var login = document.getElementById("loginModal");
+var loginResult = document.getElementById("loginResult");
+var username = document.getElementById("username");
+var password = document.getElementById("password");
+
+document.getElementById("loginButton").onclick = function() {
+	callAPI("/login", {"username": username.value, "password": password.value}, function(response){
+		if(typeof(response.error) === 'undefined'){
+			localStorage.setItem(localStorageLoginUsernameKey, username.value);
+			localStorage.setItem(localStorageLoginTokenKey, response.token);
+			status.innerHTML = "Welcome! You are logged in as " + localStorage.getItem(localStorageLoginUsernameKey);
+			login.close();	
+		}else{
+			loginResult.innerHTML = response.error;
+		}
+	});
 };
 
 document.getElementById("cancelLoginButton").onclick = function() {
@@ -62,7 +71,6 @@ if(localStorage.getItem(localStorageLoginTokenKey) === null){
 
 //POI MODAL SCRIPT
 
-var poi = document.getElementById("poiModal");
 var poiLocation = document.getElementById("poiLocation");
 
 document.getElementById("savePoi").onclick = function() {
@@ -79,16 +87,56 @@ document.getElementById("logout").onclick = function() {
 
 //SIGNUP MODAL SCRIPT
 
+var signup = document.getElementById("signupModal");
+var signupResult = document.getElementById("signupResult");
+var signupUsername = document.getElementById("signupUsername");
+var signupEmail = document.getElementById("signupEmail");
+var signupPassword = document.getElementById("signupPassword");
+
+document.getElementById("signupButton").onclick = function() {
+	callAPI("/signup", {"username": signupUsername.value, "email": signupEmail.value, "password": signupPassword.value}, function(response){
+		if(typeof(response.error) === 'undefined'){
+			signup.close();
+			signupResult.innerHTML = "You signed up successfully!";
+			login.show();
+		}else{
+			signupResult.innerHTML = response.error;
+		}
+	});
+};
+document.getElementById("cancelSignupButton").onclick = function() {
+	signup.close();
+};
+
+document.getElementById("goToSignup").onclick = function() {
+	login.close();
+
+	signupUsername.value = username.value;
+	signupPassword.value = password.value;
+
+	signup.show();
+};
+
 //START MAP SCRIPT
 
-map = new OpenLayers.Map("demoMap");
+map = new OpenLayers.Map("demoMap",{
+	theme: false
+});
 
-map.addLayer(new OpenLayers.Layer.OSM());
+map.addLayer(new OpenLayers.Layer.OSM(
+	"OpenStreetMap", 
+	[
+		//These parameters allow chrome to use HTTPS "naturally". Less warnings.
+		'//a.tile.openstreetmap.org/${z}/${x}/${y}.png',
+		'//b.tile.openstreetmap.org/${z}/${x}/${y}.png',
+		'//c.tile.openstreetmap.org/${z}/${x}/${y}.png'
+	], 
+	null));
 
 var markers = new OpenLayers.Layer.Markers("Markers");
 var size = new OpenLayers.Size(21, 25);
 var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
-var icon = new OpenLayers.Icon("http://maps.google.com/intl/en_us/mapfiles/ms/micons/orange-dot.png", size, offset);
+var icon = new OpenLayers.Icon("https://maps.google.com/intl/en_us/mapfiles/ms/micons/orange-dot.png", size, offset);
 map.addLayer(markers);
 
 var currentmarker = null;

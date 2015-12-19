@@ -1,0 +1,8 @@
+First, add yourself into the group www-data
+
+usermod -a -G www-data (your username)
+
+Then:
+
+chgrp www-data /home/myuser/folderA
+chmod g+rwxs /home/myuser/folderA

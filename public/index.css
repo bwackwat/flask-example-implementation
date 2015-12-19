@@ -28,6 +28,7 @@ button {
 .modal {
 	background-color: lightblue;
 	position: fixed;
+	float: right;
 	top: 35vh;
 	left: 35vw;
 	margin: 0px;

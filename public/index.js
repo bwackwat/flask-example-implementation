@@ -71,6 +71,7 @@ if(localStorage.getItem(localStorageLoginTokenKey) === null){
 
 //POI MODAL SCRIPT
 
+var poi = document.getElementById("poiModal");
 var poiLocation = document.getElementById("poiLocation");
 
 document.getElementById("savePoi").onclick = function() {
@@ -126,7 +127,7 @@ map = new OpenLayers.Map("demoMap",{
 map.addLayer(new OpenLayers.Layer.OSM(
 	"OpenStreetMap", 
 	[
-		//These parameters allow chrome to use HTTPS "naturally". Less warnings.
+		//Chrome will use HTTPS
 		'//a.tile.openstreetmap.org/${z}/${x}/${y}.png',
 		'//b.tile.openstreetmap.org/${z}/${x}/${y}.png',
 		'//c.tile.openstreetmap.org/${z}/${x}/${y}.png'
@@ -154,7 +155,7 @@ map.events.register("click", map, function(e) {
 		currentmarker = new OpenLayers.Marker(position, icon.clone());
 		markers.addMarker(currentmarker);
 
-		poi.show();	
+		poi.show();
 	}
 });
 

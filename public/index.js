@@ -59,7 +59,7 @@ map.events.register("click", map, function(e) {
 		poiLongitude.innerHTML = position.lon.toFixed(5);
 		poiLatitude.innerHTML = position.lat.toFixed(5);
 
-		if(currentmarker !== 'undefined'){
+		if(currentmarker != null){
 			markers.removeMarker(currentmarker);
 		}
 		currentmarker = new OpenLayers.Marker(position, icon.clone());
@@ -110,8 +110,8 @@ function updateMarkers(){
 			for(var i = 0, len = response.result.length; i < len; i++){
 				var geoloc = response.result[i].location;
 				var lonlat = new OpenLayers.LonLat(geoloc.longitude, geoloc.latitude);
-				currentmarker = new OpenLayers.Marker(lonlat, icon.clone());
-				markers.addMarker(currentmarker);
+				var newmarker = new OpenLayers.Marker(lonlat, icon.clone());
+				markers.addMarker(newmarker);
 			}
 		}else{
 			status.innerHTML = response.error;
@@ -160,9 +160,10 @@ document.getElementById("savePoi").onclick = function() {
 		"latitude": poiLatitude.innerHTML}}, function(response){
 		if(typeof(response.error) === 'undefined'){
 			poi.close();
-			signupResult.innerHTML = "Successfully saved the POI!";
+			status.innerHTML = "Successfully saved the POI!";
+			updateMarkers();
 		}else{
-			signupResult.innerHTML = response.error;
+			status.innerHTML = response.error;
 		}
 	});
 };
@@ -183,7 +184,10 @@ document.getElementById("signupButton").onclick = function() {
 	callAPI("/signup", {"username": signupUsername.value, "email": signupEmail.value, "password": signupPassword.value}, function(response){
 		if(typeof(response.error) === 'undefined'){
 			signup.close();
-			signupResult.innerHTML = "You signed up successfully!";
+			loginResult.innerHTML = "";
+			username.value = signupUsername.value;
+			password.value = signupPassword.value;
+			status.innerHTML = "You signed up successfully!";
 			login.show();
 		}else{
 			signupResult.innerHTML = response.error;

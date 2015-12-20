@@ -18,7 +18,7 @@ db = SQLAlchemy(app)
 
 MYSECRET = "thisismyrealsecret"
 
-from models import User, public_serialize
+from models import User, Poi, public_serialize
 
 @app.after_request
 def after_request(response):
@@ -30,9 +30,11 @@ def after_request(response):
 def exceptor(f):
 	@wraps(f)
 	def decorated(*args, **kwargs):
+		print request.json
+
 		try:
 			return f(*args, **kwargs)
-		except DecodeError as e:
+		except jwt.DecodeError as e:
 			return jsonify(error=str(e) + ": Invalid token! Go login again...")
 		except ValueError as e:
 			return jsonify(error=str(e) + ": Password was stored improperly...")
@@ -49,12 +51,12 @@ def protected(f):
 	def decorated(*args, **kwargs):
 		data = request.json
 		token = data['token']
-		tokendata = jwt.decode(token, MYSECRET, algorithms=["HS256"])
+		request.tokendata = jwt.decode(token, MYSECRET, algorithms=["HS256"])
 
-		user = User.query.filter_by(username=tokendata['username']).first()
+		user = User.query.filter_by(id=request.tokendata['id']).first()
 		if user == None:
 			return jsonify(error="Invalid username! Are you tring to forge a token?")
-		if user.password == tokendata['password']:
+		if user.password == request.tokendata['password']:
 			return f(*args, **kwargs)
 		else:
 			return jsonify(error="Invalid password! Are you tring to forge a token?")
@@ -70,6 +72,37 @@ def users():
 	results = []
 	for user in users:
 		results.append(public_serialize(user))
+	return jsonify(result=results)
+
+@app.route(apiPrefix + "/poi/new", methods=["POST"])
+@exceptor
+@protected
+def newpoi():
+	data = request.json
+
+	owner_id = request.tokendata['id']
+	label = data['label']
+	description = data['description']
+	location = data['location']
+
+	poi = Poi(owner_id, label, description, location)
+	db.session.add(poi)
+	db.session.commit()
+
+	return jsonify(result=repr(poi))
+
+@app.route(apiPrefix + "/poi/all", methods=["POST"])
+@exceptor
+@protected
+def allpois():
+	data = request.json
+
+	owner_id = request.tokendata['id']
+
+	pois = Poi.query.filter_by(owner_id=request.tokendata['id'])
+	results = []
+	for poi in pois:
+		results.append(public_serialize(poi))
 	return jsonify(result=results)
 
 @app.route(apiPrefix + "/signup", methods=["POST"])
@@ -99,7 +132,7 @@ def login():
 	if user == None:
 		return jsonify(error="Invalid username!")
 	if bcrypt.check_password_hash(user.password, password):
-		token = jwt.encode({"time": str(db.func.current_timestamp()), "username": user.username, "password": user.password}, MYSECRET, algorithm="HS256")
+		token = jwt.encode({"time": str(db.func.current_timestamp()), "id": user.id, "password": user.password}, MYSECRET, algorithm="HS256")
 		return jsonify(result="Successful login!", token=token)
 	else:
 		return jsonify(error="Invalid password!")

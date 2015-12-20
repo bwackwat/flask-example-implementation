@@ -12,12 +12,12 @@
 
 	<body>
 		<div id="banner">
-			<h4 style="margin: 4px;">&nbsp;&nbsp;&nbsp;&#1422;&nbsp;&nbsp;&nbsp;&#1422;&nbsp;&nbsp;&nbsp;&#1422;&nbsp;&nbsp;&nbsp;&nbsp;                            (requires latest version of chrome)<div id="status" style="float: right">Welcome!</div></h4>
+			<h4 style="margin: 4px;">&nbsp;&nbsp;&nbsp;&#1422;&nbsp;&nbsp;&nbsp;&#1421;&nbsp;&nbsp;&nbsp;&#1422;&nbsp;&nbsp;&nbsp;&nbsp;(requires latest version of chrome)<div id="status" style="float: right">Welcome!</div></h4>
 		</div>
 
 		<div id="demoMap"></div>
 
-		<div id="signupModal" class="modal">
+		<dialog id="signupModal" class="modal">
 			<h3>Signup</h3>
 			<h4 class="result" id="signupResult"></h4>
 			<input id="signupUsername" type="text" placeholder="username"><br>
@@ -25,7 +25,7 @@
 			<input id="signupPassword" type="password" placeholder="password"><br>
 			<button id="signupButton">Signup</button>
 			<button id="cancelSignupButton">Maybe Later</button>
-		</div>
+		</dialog>
 
 		<dialog id="loginModal" class="modal">
 			<h3>Login to save your points of interest!</h3>
@@ -40,9 +40,9 @@
 
 		<dialog id="poiModal" class="modal">
 			<h3>Enter some information about this point of interest!</h3>
-			<h4 id="poiLocation"></h4>
-			<input type="text" placeholder="location label" id="poilabel"><br>
-			<input type="text" placeholder="location description" id="poidescription"><br>
+			<h4>Position: <div id="poiLongitude"></div>, <div id="poiLatitude"></div></h4>
+			<input type="text" placeholder="location label" id="poiLabel"><br>
+			<input type="text" placeholder="location description" id="poiDescription"><br>
 			<button id="savePoi">Save</button>
 			<button id="cancelPoi">Cancel/Close</button><br>
 			<h4>Or maybe you just want to...</h4>

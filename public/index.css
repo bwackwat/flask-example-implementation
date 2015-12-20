@@ -15,6 +15,10 @@ button {
 	height: 96vh;
 }
 
+#poiLongitude, #poiLatitude {
+	display: inline-block;
+}
+
 #banner {
 	background-color: lightblue;
 	border: 1px black solid;

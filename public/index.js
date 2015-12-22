@@ -2,7 +2,7 @@ window.onload = function(){
 
 var localStorageLoginUsernameKey = "FLASK_MAP_EXAMPLE_USERNAME";
 var localStorageLoginTokenKey = "FLASK_MAP_EXAMPLE_TOKEN";
-var apiUrl = "https://" + window.location.hostname + ":1000/api";
+var apiUrl = "https://" + window.location.hostname + ":2000/api";
 
 var status = document.getElementById("status");
 

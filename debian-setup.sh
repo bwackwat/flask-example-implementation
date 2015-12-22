@@ -3,9 +3,7 @@
 apt-get upgrade
 apt-get update
 
-apt-get install git nginx
-
-git clone https://github.com/bwackwat/flask-example-implementation.git
+apt-get install nginx
 
 apt-get install python python-flask python-pip python-dev python-psycopg2
 apt-get install postgresql postgresql-client postgis
@@ -18,6 +16,6 @@ pip install flask flask-bcrypt flask-sqlalchemy pyjwt sqlalchemy geoalchemy2 psy
 #ALTER USER "postgres" WITH PASSWORD 'aq12ws';
 #CREATE EXTENSION postgis;
 
-chown -R www-data:www-data ./public
+#chown -R www-data:www-data ./public
 
 #openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout localhost.key -out localhost.crt
